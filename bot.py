@@ -39,7 +39,10 @@ client = TelegramClient('session_read',api_id,api_hash)
 @client.on(events.NewMessage)
 async def main(event):
     message = event.text
-
+    reply = await event.get_reply_message()
+    print(reply)
+    if reply!= None:
+        messaggio_reply = reply.message
     message_return = []
     chat_id=event.chat.id
     messaggioId=event.message.id
@@ -61,23 +64,28 @@ async def main(event):
             commentoSussyBaka = f"Messaggio inviato da (+{phone}) (#{chat_id}) \n\n{message}"
             controllo = True
         else:
-            await client.send_message(chat_id,"Per parlare con l'assistenza aggiungere un username al vostro account Telegram o cambiare la privacy del numero di telefono in PUBBLICO") 
+            commentoSussyBaka = f"Messaggio inviato da ({first_name}) (#{chat_id}) \n\n{message}"
+            controllo = True
+        '''else:
+            await client.send_message(chat_id,"Per parlare con l'assistenza aggiungere un username al vostro account Telegram o cambiare la privacy del numero di telefono in PUBBLICO") '''
+        
         if chat_id != 1881287074 and controllo:
             await client.send_message(1881287074,commentoSussyBaka) 
-        elif chat_id == 1881287074: 
+        elif chat_id == 1881287074 and reply.sender.id==5802676518: 
             cleaned_string_chiocciola = re.compile("@(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
-            message_text_c = cleaned_string_chiocciola.findall(message)
+            message_text_c = cleaned_string_chiocciola.findall(messaggio_reply)
             if len(message_text_c)>0:
                 messaggio_admin = message.replace(message_text_c[0],'')
-                await client.send_message(message_text_c[0], messaggio_admin)
+                message_text_c[0] = message_text_c[0].replace(')','')
+                await client.send_message(message_text_c[0], message)
             else:
                 cleaned_string_cancelletto = re.compile("#(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
-                message_text_cancelletto = cleaned_string_cancelletto.findall(message)
+                message_text_cancelletto = cleaned_string_cancelletto.findall(messaggio_reply)
                 if len(message_text_cancelletto)>0:
                     tag = message_text_cancelletto[0][1:]
                     print("cancelletto: "+tag)
-                    messaggio_admin = message.replace(message_text_cancelletto[0],'')
-                    await client.send_message(int(tag), messaggio_admin)
+                    tag = tag.replace(')','')
+                    await client.send_message(int(tag), message)
 
 
 
